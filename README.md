@@ -1,4 +1,4 @@
-**App:** _paste your public app link here_
+**App:** https://8apvwa2rtakyf4ehbacveb.streamlit.app/ 
 
 # Judge the Model
 
