@@ -8,7 +8,18 @@
 ## Before results
 For each dataset: positive class; which error matters more for the job (missed positive or false alarm) and why.
 - readmission:
+Positive class: readmitted patients within 30 days
+
+A false negative error matters more because the patient is not getting the care or preventative care that they need. If a patient gets flagged as having a high chance of readmission, even if that’s not the case medically, a follow-up call from a provider talking about lab results and symptoms would help deductively assess whether the patient is at risk of coming back. Once the system flags a patient, a medical professional intervenes and uses their medical training to make the ultimate decision. I would rather be safe than sorry.
+
+Limit: If the model was predicting positive for too many patients, there may not be enough staff to support the patient volume. There may be capacity and budget issues.
+
 - diabetes:
+Positive class: a patient having diabetes
+
+A false negative error matters more. If a patient with diabetes does not get flagged, there could be potential fatal results or long-term health effects. On the other hand, if a patient gets flagged and does not have diabetes, it would be ruled out medically with specific tests. It would then be a confirmed no.
+
+Limit: Since an AI model is running the prediction, it would not use an excess of staff members, but if the model was predicting positive for too many patients, there may not be enough staff to support the patient volume. There may be capacity and budget issues.
 
 ## Recommendations
 - readmission: <model and threshold, or "none is adequate for this job"> because ...
