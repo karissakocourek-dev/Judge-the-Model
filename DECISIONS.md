@@ -8,11 +8,7 @@
 ## Before results
 For each dataset: positive class; which error matters more for the job (missed positive or false alarm) and why.
 - readmission:
-Positive class: readmitted patients within 30 days
-
-A false negative error matters more because the patient is not getting the care or preventative care that they need. If a patient gets flagged as having a high chance of readmission, even if that’s not the case medically, a follow-up call from a provider talking about lab results and symptoms would help deductively assess whether the patient is at risk of coming back. Once the system flags a patient, a medical professional intervenes and uses their medical training to make the ultimate decision. I would rather be safe than sorry.
-
-Limit: Positive class is readmitted patients within 30 days. A missed positive matters more because the patient is not getting the care or preventative care they need. A false alarm only costs a follow-up call from a provider talking about lab results and symptoms, and a medical professional uses their medical training to make the ultimate decision. But if the model predicts positive for too many patients, there may not be enough staff to support the patient volume.
+Positive class: Positive class is readmitted patients within 30 days. A missed positive matters more because the patient is not getting the care or preventative care they need. A false alarm only costs a follow-up call from a provider talking about lab results and symptoms, and a medical professional uses their medical training to make the ultimate decision. But if the model predicts positive for too many patients, there may not be enough staff to support the patient volume.
 
 - diabetes: Positive class is a patient having diabetes. A missed positive matters more because there could be potential fatal results or long-term health effects. A false alarm would be ruled out medically with specific tests and become a confirmed no, though too many flags could cause capacity and budget issues.
 
