@@ -13,10 +13,10 @@ Positive class: Positive class is readmitted patients within 30 days. A missed p
 - diabetes: Positive class is a patient having diabetes. A missed positive matters more because there could be potential fatal results or long-term health effects. A false alarm would be ruled out medically with specific tests and become a confirmed no, though too many flags could cause capacity and budget issues.
 
 ## Recommendations
-- readmission: <model and threshold, or "none is adequate for this job"> because ...
-- diabetes: ...
+- readmission: None is adequate for this job because to catch about half of readmissions, the best model, random forest at 0.10, flags 35.7 patients per 100 and about 31 of those are false alarms, so there would not be enough staff to support the patient volume. At a threshold staff could handle, like 0.20, it misses about 9 of every 10 readmissions.
+- diabetes: Logistic regression at 0.12 because it reaches the screening team’s 90% sensitivity target with 34.6 false alarms per 100 adults, the fewest of the models, and a false alarm is ruled out medically with specific tests. Since I chose the threshold on the test patients, sensitivity on new patients may be a little lower.
 
 ## Design choice and AI use
 A few sentences each. The design choice must be your own idea, not an AI tool's.
-- design choice: <one thing you chose to show, or leave out, for your clinical lead> because ...
-- AI suggestion I turned down: <what an AI tool suggested, and why you didn't use it, or "no AI tools used">
+- design choice: In the Beyond Accuracy section, I chose for a confusion matrix to be displayed next to the model’s accuracy description. I thought it was important to explain how a model’s accuracy score may be misleading when looking at the number of people flagged in each category.
+- AI suggestion I turned down: For the Threshold for the Job section, I did not choose the dot plot option because I did not want too many visuals to distract from the main focus of probabilities and the confusion matrix.
