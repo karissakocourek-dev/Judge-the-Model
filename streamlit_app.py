@@ -21,8 +21,16 @@ LABEL = {k: v[:1].upper() + v[1:] for k, v in m11.MODEL_LABEL.items()}
 
 
 @st.cache_data
-def load(name: str):
+def _load(name: str, stamp):
     return m11.load(name)
+
+
+def load(name: str):
+    """results/<name>.json through m11.load, cached. The cache key includes the file's modification time and size,
+    so after a push brings new results (e.g. on Streamlit Community Cloud) the app reads them instead of an old copy."""
+    path = m11.RESULTS / f"{name}.json"
+    stat = path.stat() if path.exists() else None
+    return _load(name, None if stat is None else (stat.st_mtime_ns, stat.st_size))
 
 
 def starter_note(text: str) -> None:
