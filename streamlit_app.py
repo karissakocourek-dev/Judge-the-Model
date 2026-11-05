@@ -179,13 +179,48 @@ def beyond_accuracy(res: dict, model: str) -> None:
 
 
 # ---- 2. A Threshold for the Job ------------------------------------------------
+def threshold_panel(c: dict, key: str, t: float, title: str) -> None:
+    """One column of the comparison: the Test confusion matrix and its metrics at threshold t (all from m11)."""
+    w = WORDS[key]
+    m = m11.metrics(c)
+    with st.container(border=True):
+        st.markdown(f"**{TEST} · {title}**")
+        st.metric(f"Flagged per 100 ({TEST})", m11.fmt_num(m["flagged_per_100"], 1))
+        st.caption(f"Of every 100 test {w['many']}, how many the model flags ({m['flagged']:,} of {m['n']:,}).")
+        st.markdown(confusion_html(c, key, t), unsafe_allow_html=True)
+        a, b = st.columns(2)
+        with a:
+            st.metric(f"Sensitivity ({TEST})", m11.fmt_pct(m["sensitivity"]))
+            st.caption(f"Of the {m['positives']:,} who {w['had']}, the share flagged ({c['tp']:,}).")
+            st.metric(f"Precision ({TEST})", m11.fmt_pct(m["precision"]))
+            st.caption(f"Of the {m['flagged']:,} flagged, the share who {w['had']} ({c['tp']:,}).")
+        with b:
+            st.metric(f"Specificity ({TEST})", m11.fmt_pct(m["specificity"]))
+            st.caption(f"Of the {m['negatives']:,} who {w['had_not']}, the share not flagged ({c['tn']:,}).")
+            st.metric(f"Accuracy ({TEST})", m11.fmt_pct(m["accuracy"]))
+            st.caption(f"Of all {m['n']:,} test {w['many']}, the share the model got right.")
+
+
 def threshold(res: dict, model: str) -> None:
-    starter_note("metrics at 0.50 only.")
-    p, y = m11.preds(res, model)
-    m = m11.metrics(m11.confusion(p, y, 0.5))
-    st.caption(f"{TEST} · {LABEL[model]}, threshold 0.50")
-    st.table(pd.DataFrame([{"Sensitivity": m11.fmt_pct(m["sensitivity"]), "Specificity": m11.fmt_pct(m["specificity"]),
-                            "Precision": m11.fmt_pct(m["precision"]), "Flagged per 100": f"{m['flagged_per_100']:.1f}"}]))
+    key = res["dataset"]
+    w = WORDS[key]
+    p, y = m11.preds(res, model)            # Test probabilities and true outcomes: the same at every threshold
+    name = LABEL[model]
+
+    t = st.slider("Threshold: flag a test patient when the model's probability is at least this value",
+                  min_value=0.0, max_value=1.0, value=0.5, step=0.01, format="%.2f", key="threshold")
+    st.info(f"Moving the slider changes **no probability and no AUROC, only who is flagged**. Each test {w['one']}'s "
+            f"probability from {name} stays the same; the slider only moves the cut-off line. "
+            f"The {TEST} AUROC of {name} is {m11.fmt_num(m11.auroc(p, y))} at every threshold, because AUROC describes "
+            f"how well the model ranks {w['many']}, not where the line is drawn.")
+    st.caption(f"Positive class: {w['positive']}. A lower threshold flags more {w['many']}: it finds more who "
+               f"{w['had']}, and raises more false alarms. A higher threshold does the reverse.")
+
+    left, right = st.columns(2, gap="large")
+    with left:
+        threshold_panel(m11.confusion(p, y, 0.5), key, 0.5, f"{name} · at the usual threshold 0.50")
+    with right:
+        threshold_panel(m11.confusion(p, y, t), key, t, f"{name} · at your threshold {t:.2f}")
 
 
 # ---- 3. Training vs. Test ------------------------------------------------------
