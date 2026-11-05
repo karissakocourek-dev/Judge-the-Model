@@ -49,11 +49,13 @@ WORDS = {
         "one": "patient", "many": "patients",
         "positive": "Readmitted within 30 days", "negative": "Not readmitted within 30 days",
         "had": "were readmitted within 30 days", "had_not": "were not readmitted within 30 days",
+        "has": "was readmitted within 30 days",
     },
     "diabetes": {
         "one": "adult", "many": "adults",
         "positive": "Diabetes (doctor diagnosis or HbA1c ≥ 6.5%)", "negative": "No diabetes by this label",
         "had": "have diabetes by this label", "had_not": "do not have diabetes by this label",
+        "has": "has diabetes by this label",
     },
 }
 # The four groups of patients in a confusion matrix.
@@ -71,6 +73,12 @@ st.markdown("""
 .cm.small th, .cm.small td { padding: 0.25rem 0.3rem; font-size: 0.78rem; }
 .cm.small .n { font-size: 1rem; }
 .cm-wrap.sel { outline: 2px solid rgba(255,140,0,0.9); outline-offset: 3px; border-radius: 4px; }
+.auc-card { border: 1px solid rgba(128,128,128,0.35); border-radius: 8px; padding: 0.7rem 0.8rem; margin-bottom: 0.5rem; }
+.auc-card.sel { outline: 2px solid rgba(255,140,0,0.9); outline-offset: 2px; }
+.auc-card .name { font-weight: 700; margin-bottom: 0.4rem; min-height: 2.6em; }
+.auc-card .lbl { font-size: 0.8rem; opacity: 0.8; margin-top: 0.35rem; }
+.auc-card .val { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
+.auc-card .gap { border-top: 1px solid rgba(128,128,128,0.35); margin-top: 0.5rem; padding-top: 0.2rem; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -225,12 +233,43 @@ def threshold(res: dict, model: str) -> None:
 
 # ---- 3. Training vs. Test ------------------------------------------------------
 def train_vs_test(res: dict, model: str) -> None:
-    starter_note("training and test AUROC of every model, in a table.")
-    s = m11.auroc_summary(res)
-    rows = [{"Model": LABEL[m], f"{TRAIN} AUROC": m11.fmt_num(v["train"]), f"{TEST} AUROC": m11.fmt_num(v["test"])}
-            for m, v in s.items()]
-    st.caption(f"{TRAIN} and {TEST} · AUROC on the rows each model learned from, and on rows it never saw")
-    st.table(pd.DataFrame(rows).set_index("Model"))
+    key = res["dataset"]
+    w = WORDS[key]
+    s = m11.auroc_summary(res)              # Training AUROC, Test AUROC and gap (Training − Test) per model
+
+    st.markdown(f"A model is judged on {w['many']} it never saw. **{TRAIN}** AUROC is scored on the {w['many']} the model "
+                f"learned from, so it flatters every model. Only **{TEST}** AUROC says what to expect on new {w['many']}.")
+
+    a, b = st.columns(2)
+    for col, part, blurb in ((a, "train", "The models learned from these."), (b, "test", "No model ever saw these.")):
+        with col, st.container(border=True):
+            st.metric(f"{m11.PARTITION_LABEL[part]} {w['many']}", f"{res[part]['n']:,}")
+            st.caption(f"{blurb} {res[part]['n_pos']:,} of them {w['had']}.")
+
+    st.subheader(f"{TRAIN} and {TEST} AUROC of every model")
+    st.caption(f"{TRAIN} and {TEST} · AUROC is how often a {w['one']} who {w['has']} "
+               f"gets a higher probability than one who did not. It describes ranking, not accuracy: 0.500 is no better than "
+               f"a coin flip and 1.000 is perfect ranking. The selected model has an orange outline.")
+
+    def num(v, signed: bool = False) -> str:
+        return "undefined" if v is None else (f"{v:+.3f}" if signed else m11.fmt_num(v))
+
+    models = [k for k in m11.MODELS if k in s]
+    for col, k in zip(st.columns(len(models)), models):
+        v = s[k]
+        with col:
+            st.markdown(
+                f"<div class='auc-card{' sel' if k == model else ''}'>"
+                f"<div class='name'>{LABEL[k]}</div>"
+                f"<div class='lbl'>{TRAIN} AUROC</div><div class='val'>{num(v['train'])}</div>"
+                f"<div class='lbl'>{TEST} AUROC</div><div class='val'>{num(v['test'])}</div>"
+                f"<div class='gap'><div class='lbl'>Gap ({TRAIN} − {TEST})</div><div class='val'>{num(v['gap'], True)}</div></div>"
+                f"</div>", unsafe_allow_html=True)
+
+    st.caption(f"The gap is {TRAIN} AUROC minus {TEST} AUROC. A large positive gap means the model ranked the {w['many']} "
+               f"it learned from far better than new ones: it memorised its {TRAIN.lower()} {w['many']} (overfitting). "
+               f"A gap near zero, or slightly below zero, means it ranks new {w['many']} about as well as the ones it "
+               f"learned from; small differences either way can happen by chance.")
 
 
 RENDER = dict(zip(SECTIONS, [beyond_accuracy, threshold, train_vs_test]))
