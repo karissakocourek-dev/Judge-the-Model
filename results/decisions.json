@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-11-05T00:06:00Z",
+  "exported_at": "2026-11-05T13:15:48Z",
   "words": 128,
   "word_limit": 150,
   "sections": {
@@ -8,21 +8,21 @@
       "diabetes": "Positive class is a patient having diabetes. A missed positive matters more because there could be potential fatal results or long-term health effects. A false alarm would be ruled out medically with specific tests and become a confirmed no, though too many flags could cause capacity and budget issues."
     },
     "recommendations": {
-      "readmission": "",
-      "diabetes": ""
+      "readmission": "None is adequate for this job because to catch about half of readmissions, the best model, random forest at 0.10, flags 35.7 patients per 100 and about 31 of those are false alarms, so there would not be enough staff to support the patient volume. At a threshold staff could handle, like 0.20, it misses about 9 of every 10 readmissions.",
+      "diabetes": "Logistic regression at 0.12 because it reaches the screening team’s 90% sensitivity target with 34.6 false alarms per 100 adults, the fewest of the models, and a false alarm is ruled out medically with specific tests. Since I chose the threshold on the test patients, sensitivity on new patients may be a little lower."
     },
     "design": {
-      "design_choice": "",
-      "ai_turned_down": ""
+      "design_choice": "In the Beyond Accuracy section, I chose for a confusion matrix to be displayed next to the model’s accuracy description. I thought it was important to explain how a model’s accuracy score may be misleading when looking at the number of people flagged in each category.",
+      "ai_turned_down": "For the Threshold for the Job section, I did not choose the dot plot option because I did not want too many visuals to distract from the main focus of probabilities and the confusion matrix."
     }
   },
   "complete": {
     "before_results": true,
-    "recommendations": false,
-    "design": false
+    "recommendations": true,
+    "design": true
   },
   "recommendations": {
-    "readmission": "",
-    "diabetes": ""
+    "readmission": "None is adequate for this job because to catch about half of readmissions, the best model, random forest at 0.10, flags 35.7 patients per 100 and about 31 of those are false alarms, so there would not be enough staff to support the patient volume. At a threshold staff could handle, like 0.20, it misses about 9 of every 10 readmissions.",
+    "diabetes": "Logistic regression at 0.12 because it reaches the screening team’s 90% sensitivity target with 34.6 false alarms per 100 adults, the fewest of the models, and a false alarm is ruled out medically with specific tests. Since I chose the threshold on the test patients, sensitivity on new patients may be a little lower."
   }
 }
