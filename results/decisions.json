@@ -1,11 +1,11 @@
 {
-  "exported_at": null,
-  "words": 0,
+  "exported_at": "2026-11-05T00:06:00Z",
+  "words": 128,
   "word_limit": 150,
   "sections": {
     "before_results": {
-      "readmission": "",
-      "diabetes": ""
+      "readmission": "Positive class: Positive class is readmitted patients within 30 days. A missed positive matters more because the patient is not getting the care or preventative care they need. A false alarm only costs a follow-up call from a provider talking about lab results and symptoms, and a medical professional uses their medical training to make the ultimate decision. But if the model predicts positive for too many patients, there may not be enough staff to support the patient volume.",
+      "diabetes": "Positive class is a patient having diabetes. A missed positive matters more because there could be potential fatal results or long-term health effects. A false alarm would be ruled out medically with specific tests and become a confirmed no, though too many flags could cause capacity and budget issues."
     },
     "recommendations": {
       "readmission": "",
@@ -17,7 +17,7 @@
     }
   },
   "complete": {
-    "before_results": false,
+    "before_results": true,
     "recommendations": false,
     "design": false
   },
